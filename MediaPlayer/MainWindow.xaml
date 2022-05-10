@@ -1,0 +1,77 @@
+﻿<Window x:Class="WpfApp29.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp29"
+        mc:Ignorable="d"
+        Title="MediaPlayer" WindowState="Maximized" WindowStyle="ThreeDBorderWindow"
+        x:Name="mainWindow" Height="1080" Width="1920" Loaded="Window_Loaded" FontSize="24">
+    <Window.Resources>
+        <local:SecondsTimeSpanConverter x:Key="secondTimeSpanConverter"/>
+        <local:ProgresBarConverter x:Key="progresBarConverter"/>
+    </Window.Resources>
+
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <Label  HorizontalAlignment="Left" Margin="10"  
+               VerticalAlignment="Center">Path to the video:</Label>
+            <TextBox Text="" Width="1500" Height="50" x:Name="pathUrl"
+                 HorizontalAlignment="Center" VerticalAlignment="Center"
+                 BorderThickness="1,1,1,1" BorderBrush="BlueViolet"/>
+        </Grid>
+
+        <StatusBar DockPanel.Dock="Bottom" Width="{Binding ElementName=mainWindow, Path=Width}">
+            <StatusBarItem HorizontalAlignment="Center">
+                <Grid>
+                    <ProgressBar Margin="25" Width="500" Height="20" 
+                                 Value="{Binding ElementName=TimerSlider, Path=Value}" 
+                                 Maximum="{Binding ElementName=TimerSlider, Path=Maximum}">
+                    </ProgressBar>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock.Text>
+                            <MultiBinding Converter="{StaticResource progresBarConverter}"
+                                          StringFormat="{}{0:P0}">
+                                <Binding ElementName="TimerSlider" Path="Value"></Binding>
+                                <Binding ElementName="TimerSlider" Path="Maximum"></Binding>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+            </StatusBarItem>
+        </StatusBar>
+        <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+            <Button DockPanel.Dock="Top" Name="btnOpenFile" Padding="5" Margin="5"
+                     Click="btnOpenFile_Click">Open file</Button>
+            <Button Padding="5" Margin="5" Click="VideoClipPlayHandler">Play</Button>
+            <Button Padding="5" Margin="5" Click="VideoClipPauseHandler">Pause</Button>
+            <Button Padding="5" Margin="5" Click="VideoClipStopHandler">Stop</Button>
+            <Label Content="Volume: "/>
+            <Slider Width="250" Value="{Binding ElementName=VideoClip, Path=Volume}" Maximum="1"/>
+            <Label Content="Time: "/>
+            <Label x:Name="timeOfWatchedVideo" Content="{Binding ElementName=TimerSlider, 
+                Path=Value, 
+                Converter={StaticResource ResourceKey=secondTimeSpanConverter}}">
+            </Label>
+            <Slider Width="500" 
+                    x:Name="TimerSlider" 
+                    ValueChanged="TimerSlider_ValueChanged"
+                    Thumb.DragStarted="TimerSlider_DragStarted"
+                    Thumb.DragCompleted="TimerSlider_DragCompleted"/>
+            <Label x:Name="totalTimeofVideo"></Label>
+        </WrapPanel>
+
+        <Border BorderThickness="1,1,1,1" BorderBrush="BlueViolet" Margin="20" x:Name="frame">
+            <MediaElement Source="{Binding ElementName=pathUrl, Path=Text}"
+                      Volume="0.5" 
+                      LoadedBehavior="Manual"
+                      x:Name="VideoClip" 
+                      Height="{Binding ElementName=frame, Path=Height}"
+                      Width="{Binding ElementName=frame, Path=Width}"      
+                      MediaFailed="VideoClip_MediaFailed"
+                      MediaOpened="VideoClip_MediaOpened"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"/>
+        </Border>
+    </DockPanel>
+</Window>
