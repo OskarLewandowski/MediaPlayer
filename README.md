@@ -1,4 +1,4 @@
-# MediaPlayer:
+# MediaPlayer [My Learning]
 - a simple application, that allows you to watch a media elements
 - created in WPF
 - UI in English
